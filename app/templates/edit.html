@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="_content">
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-8">
+                <div id="editparent">
+                    <div id="editor-container">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        <span class="editor-static">标题:</span>
+                        <span id="editor-title-alert" class="alert-danger"></span>
+                        <div id="editor_title" contenteditable="true">
+                            {% if article %}
+                            {{article.title}}
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        <span class="editor-static">正文内容:</span>
+                        <span id="editor-content-alert" class="alert-danger"></span>
+                        <br>
+
+                        <form>
+                    <textarea name="editor" id="editor" class="ckeditor" rows="80" cols="80" placeholder="在此输入内容">
+                        {% if article %}
+                        {{article.body}}
+                        {% endif %}
+                    </textarea>
+                        </form>
+                    </div>
+
+                </div>
+                <span class="glyphicon glyphicon-pencil"></span>
+                <span class="editor-static">选择文章分类:</span>
+                <span id="editor-select-alert" class="alert-danger"></span>
+                <div id="editor-select">
+                    {% for t in tags %}
+                    <span class="editor-type" value="0">{{ t }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="editor-submit">
+                    <button type="submit" id="editSubmit" class="btn btn-primary btn-lg">提交</button>
+                </div>
+
+                <div class="embed">
+                    <div id="embed-captcha"></div>
+                    <div class="embed-alert">
+                        <p id="wait" class="show">正在加载验证码......</p>
+                        <p id="notice" class="hide">请先拖动验证码到相应位置</p>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="/static/js/bootstrap.min.js"></script>-->
+
+<script src="http://static.geetest.com/static/tools/gt.js"></script>
+
+<script src="/static/ckeditor/ckeditor.js"></script>
+<script src="/static/ckeditor/config.js"></script>
+<script>
+    var handlerEmbed_edit = function (captchaObj) {
+        $("#editSubmit").click(function (e) {
+            var validate = captchaObj.getValidate();
+            if (!validate) {
+                $("#notice")[0].className = "show";
+                setTimeout(function () {
+                    $("#notice")[0].className = "hide";
+                }, 2000);
+                e.preventDefault();
+            }
+            else {
+                var title = $.trim($("#editor_title").text());
+                var content = CKEDITOR.instances.editor.getData();
+                var type = $(".editor-type").filter(".editor-type-selected").text();
+                // console.log(content,type,$.trim(content).length,$.trim(title) == "", title);
+                if (type == "") {
+                    $("#editor-select-alert").text("请选择文章分类");
+                    scoll("#editor-select-alert");
+                    e.preventDefault();
+                    return;
+                }
+                if (content.length < 10) {
+                    $("#editor-select-alert").text("");
+                    $("#editor-content-alert").text("文章内容太少了额。。。");
+                    scoll("#editor-content-alert");
+                    e.preventDefault();
+                    return;
+                }
+                if (title == "") {
+                    $("#editor-select-alert").text("");
+                    $("#editor-content-alert").text("");
+                    $("#editor-title-alert").text("请填写文章标题");
+                    scoll("#editor-title-alert");
+                    e.preventDefault();
+                    return;
+                }
+//            $.post("{{url_for('edit', username=user.username)}}", {title: title, body: connent, type:type});
+                $.ajax({
+                    url: "/edit", // 进行二次验证
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        // 二次验证所需的三个值
+                        geetest_challenge: validate.geetest_challenge,
+                        geetest_validate: validate.geetest_validate,
+                        geetest_seccode: validate.geetest_seccode,
+                        title: title, body: content, type: type
+                    },
+                    success: function (data) {
+                        if (data && (data.status === "success")) {
+                            location.href = "http://www.oattao.cn";
+                        } else {
+                            alert("请求失败，请检查验证码是否滑动正确");
+                            e.preventDefault();
+                        }
+                    }
+                });
+            }
+        });
+        // 将验证码加到id为captcha的元素里
+        captchaObj.appendTo("#embed-captcha");
+        captchaObj.onReady(function () {
+            $("#wait")[0].className = "hide";
+        });
+    };
+
+    $.ajax({
+        // 获取id，challenge，success（是否启用failback）
+        url: "/register?t=" + (new Date()).getTime(), // 加随机数防止缓存
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            // 使用initGeetest接口
+            // 参数1：配置参数
+            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+            initGeetest({
+                gt: data.gt,
+                challenge: data.challenge,
+                product: "float", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+            }, handlerEmbed_edit);
+        }
+    });
+    //    $(function () {
+    ////        $('#editSubmit').click(function (e) {
+    //////            var title = $("#editor_title").text();
+    //////            var connent = $("#editor").html();
+    //////            var type = $(".editor-type").filter(".editor-type-selected").text();
+    //////            console.log(title, connent,type);
+    ////////            $.post("{{url_for('edit', username=user.username)}}", {title: title, body: connent, type:type});
+    //////            $.post("{{url_for('validate_capthca')}}", {title: title, body: connent, type:type});
+    //////
+    //////            alert("提交成功!!!");
+    //////            location.href("/");
+    ////        })
+    ////    });
+
+
+</script>
+
+{% endblock %}

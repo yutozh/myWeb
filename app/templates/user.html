@@ -1,0 +1,742 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.css" rel="stylesheet">
+<link href="/static/css/datepicker.css" rel="stylesheet" type="text/css"/>
+<script src="/static/js/bootstrap-datepicker.js"></script>
+<link href="//cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
+<div class="container">
+    <div class="_content">
+        <div class="portlet-title">
+        </div>
+
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-8">
+                <div class="breadcrumb">
+                    <li><a href="/">首页</a></li>
+                    <li class="active">我的主页</li>
+                </div>
+                <input type="hidden" value="{{ isMe }}" id="isMe">
+                <div class="user-info">
+                    <div class="user-img">
+                        <img src="/static/user/user_img/{{user.img}}" class="img-circle user-img-content">
+                        {% if isMe == True %}
+                        <button class="btn btn-primary " id="upload-img" data-toggle="modal"
+                             data-target="#uploadImg">上传头像
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="user-detail">
+                        <p>
+                            昵称：<span id="user_nickname">{{user.username}}</span>
+                            性别：
+                            <span id="user_gender">
+                                {% if user.gender == 0 %}
+                                <span class="fa fa-male" style="color: #1c58ef; font-size: medium">男生</span>
+                                {% elif user.gender == 1 %}
+                                <span class="fa fa-female" style="color: hotpink; font-size: medium">女生</span>
+                                {% else %}
+                                <span>未知</span>
+                                {% endif %}
+                            </span>
+                        </p>
+                        <p>
+                            生日：<span
+                                id="user_birthday">{% if user.birthday %}{{user.birthday}}{% else %}未填写{% endif %}</span>
+                            星座：<span id="user_constellation">{% if user.constellation %}{{user.constellation}}{% else %}未填写{% endif %}</span>
+                        </p>
+                        <p>
+                            邮箱：<span id="user_email">{% if user.email %}{{user.email}}{% else %}未填写{% endif %}</span>
+                            手机：<span id="user_phone">{% if user.phone %}{{user.phone}}{% else %}未填写{% endif %}</span>
+                        </p>
+                        {% if isMe == True %}
+                        <div class="user-edit">
+                            <span class="fa fa-edit"><a id="user-edit-start" data-toggle="modal"
+                                                        data-target="#changeInfo">修改资料...</a></span>
+                            <span class="fa fa-edit"><a id="user-psd-start" data-toggle="modal"
+                                                        data-target="#changePsd">修改密码...</a></span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="user-money">
+                        <p>我的金币：<span id="money">{{user.money}}</span>
+                            {% if isMe == True %}
+                            <span id="add-money">获取金币</span>
+                            {% endif %}
+                        </p>
+                        <p>我的积分：<span id="score">{{user.score}}</span>
+                            {% if isMe == True %}
+                            <span id="add-score">获取积分</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                </div>
+
+                <hr>
+                <div>
+                    <div class="admin-title">
+                        <span class="admin-title-name"><i class="glyphicon glyphicon-bell"></i>我发布的文章</span>
+                        <span href="javascript:;" class="glyphicon glyphicon-circle-arrow-down admin-title-tool"></span>
+                    </div>
+                    <div class="admin-section" id="section-article-manage">
+                        <table class="table table-striped table-bordered table-advance table-hover">
+
+                            <thead>
+
+                            <tr>
+                                <th><i class="glyphicon glyphicon-briefcase"></i> 标题</th>
+                                <th><i class="glyphicon glyphicon-time"></i>提交时间</th>
+
+                                <th><i class="glyphicon glyphicon-eye-open"></i> 浏览量</th>
+
+                                <th><i class="glyphicon glyphicon-console"></i>状态</th>
+                                <th><i class="glyphicon glyphicon-hand-up"></i>操作</th>
+
+                            </tr>
+
+                            </thead>
+
+                            <tbody>
+
+
+                            {% for post in posts %}
+                            <tr>
+                                <td>
+                                    <div class="success"></div>
+                                    <a href="/article/{{ post.id }}">{{post.title}}</a>
+                                </td>
+
+                                <td>{{post.timestamp}}</td>
+                                <td>{{post.views}}</td>
+                                <td>{{post.condition}}</td>
+                                <td>
+                                    <a href="/edit?id={{ post.id }}" class="btn btn-mini purple">
+                                        <i class="glyphicon glyphicon-edit"></i> 编辑
+                                    </a>
+                                    <a href="/delete?id={{ post.id }}" class="btn btn-mini yellow"
+                                       data-toggle="modal" data-target="#reconfirm"
+                                    >
+                                        <i class="glyphicon glyphicon-remove"></i> 删除
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+                        <div class="page-change">
+                            <div class="pagination">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if isMe == True %}
+                <div>
+                    <div class="admin-title">
+                        <span class="admin-title-name"><i class="glyphicon glyphicon-bell"></i>添加新文章</span>
+                        <span href="javascript:;" class="glyphicon glyphicon-circle-arrow-down admin-title-tool"></span>
+                    </div>
+                    <div class="admin-section" id="section-article-edit">
+                        <span class="btn btn-lg blue">
+                            <a href="{{ url_for('edit')}}" target="_self">点此发表文章</a>
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!- modal >
+{% if isMe == True %}
+<div class="modal fade" id="changeInfo" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">编辑个人资料</h4>
+            </div>
+            <div class="modal-body">
+                <form class="userform" method="post" action="/updateUserInfo">
+                    {{form.csrf_token}}
+                    <div class="form-group">
+                        <label for="userNickname">昵称：</label>
+                        <input type="text" class="form-control" id="userNickname"
+                               name="userNickname"
+                               placeholder="取个独一无二的昵称吧～"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>性别：</label>
+                        <br>
+                        <label class="radio-inline">
+                            <input type="radio" name="userGender" id="genderMale"
+                                   value="0"/> 男生
+                        </label>
+
+                        <label class="radio-inline">
+                            <input type="radio" name="userGender" id="genderFemale"
+                                   value="1"/> 女生
+                        </label>
+
+                        <label class="radio-inline">
+                            <input type="radio" name="userGender" id="genderUnknown"
+                                   value="-1"/> 保密
+                        </label>
+                    </div>
+
+                    <div class="form-group input-append date">
+                        <label for="userBirthday">生日：</label>
+                        <input type="text" class="form-control fa fa-th" id="userBirthday"
+                               value="" data-date-format="yyyy-mm-dd"
+                               name="userBirthday" placeholder="你的生日是～" readonly="readonly">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userConstellation">星座：</label>
+                        <input type="text" class="form-control" id="userConstellation"
+                               name="userConstellation"
+                               placeholder="" readonly="readonly">
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">邮箱：</label>
+                        <input type="email" class="form-control" id="userEmail" name="userEmail"
+                               placeholder="Email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPhone">手机号：(非必填)</label>
+                        <input type="tel" class="form-control" id="userPhone" name="userPhone"
+                               placeholder="你的手机号码～">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            关闭
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="userSubmit">
+                            保存修改
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="changePsd" tabindex="-1" role="dialog"
+     aria-labelledby="myModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModal">修改密码</h4>
+            </div>
+            <div class="modal-body">
+                <form class="psdform" method="post" action="/updateUserPsd">
+                    {{form_p.csrf_token}}
+                    <div class="form-group">
+                        <label for="oldPsd">原密码：</label>
+                        <input type="password" class="form-control" id="oldPsd"
+                               name="oldPsd"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPsd">新密码：</label>
+                        <input type="password" class="form-control" id="newPsd"
+                               name="newPsd"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rnewPsd">重复新密码：</label>
+                        <input type="password" class="form-control" id="rnewPsd"
+                               name="rnewPsd"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            关闭
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="psdSubmit">
+                            确认修改
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!- reconfirm>
+<div class="modal fade" id="reconfirm" tabindex="-1" role="dialog"
+     aria-labelledby="reconfirm-title">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" type="button" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="reconfirm-title">删除文章</h4>
+            </div>
+            <div class="modal-body">
+                <p style="color: #ac0001; font-size: large; font-weight: bold">
+                    确认要删除吗?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-primary">
+                    取消
+                </button>
+                <button type="button" data-dismiss="modal" class="btn btn-warning"
+                        onclick="toDelete()">
+                    <input type="hidden" id="delete_url">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="uploadImg" tabindex="-1" role="dialog"
+     aria-labelledby="uploadImg-title">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" type="button" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="uploadImg-title">上传头像</h4>
+            </div>
+            <form enctype="multipart/form-data" method=post action="/updateUserImg">
+                <div class="modal-body">
+                    <div class="user-img-all">
+                        <div class="user-img-left img-circle">
+                            <p class="bold">当前头像</p>
+                            <img src="/static/user/user_img/{{user_img_id}}" id="user-img-big" >
+                            <br>
+                            <a id="file-submit-btn" class="btn btn-warning">
+                                选择图片..
+                                <input type="file" name="img" value="从本地选择文件..." id="select-img-file">
+                            </a>
+                        </div>
+                        <div class="user-img-right">
+                            <div class="user-img-right user-img-up">
+                                <p>裁剪图片：</p>
+                                <img src="" id="user-img-before-cut" alt="点击左侧按钮选择图片">
+
+
+                                <p>预览效果：</p>
+                                <div>
+                                    <div id="preview-pane">
+                                    <div class="preview-container">
+                                        <img src="" id="user-img-preview" class="jcrop-preview" alt="预览">
+                                    </div>
+                                </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="x1" name="x1">
+                <input type="hidden" id="y1" name="y1">
+                <input type="hidden" id="x2" name="x2">
+                <input type="hidden" id="y2" name="y2">
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">
+                        取消
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        确认上传
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<link href="/static/css/pagination.css" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/jquery-jcrop/0.9.12/css/jquery.Jcrop.min.css" rel="stylesheet">
+<!--<link href="/static/css/jquery.Jcrop.min.css" rel="stylesheet">-->
+<script type="text/javascript" src="/static/js/pagination.min.js"></script>
+
+<script src="//cdn.bootcss.com/jquery-jcrop/0.9.12/js/jquery.Jcrop.js"></script>
+<!--<script type="text/javascript" src="/static/js/jquery.Jcrop.min.js"></script>-->
+
+<!--翻页-->
+<script type="text/javascript">
+    var isMe = $("#isMe").val();
+    $(".admin-title-tool").click(function () {
+//        $("#section-article-manage").slideToggle("slow");
+//        $("#section-article-edit").slideToggle("slow");
+        $(this).parent().parent().find(".admin-section").slideToggle("slow");
+        $(this).toggleClass("glyphicon-circle-arrow-up");
+        $(this).toggleClass("glyphicon-circle-arrow-down");
+    });
+
+    $(".pagination").pagination({
+        dataSource: function (done) {
+            $.ajax({
+                type: 'GET',
+                url: '/ajax_page_change',
+                data: {"type": "section-article-manage", "username": "{{ user.username }}"},
+                success: function (response) {
+                    var result = [];
+                    for (var i = 1; i <= parseInt(response); i++) {
+                        result.push(i);
+                    }
+                    done(result);
+                }
+            });
+        },
+        pageSize: 8,
+        pageRange: 3,
+        callback: pageselectCallback,
+        className: 'paginationjs-theme-blue'
+    });
+
+    function pageselectCallback(page, pagination) {
+        var result = "";
+        var username = "{{ user.username }}";
+        var type = "section-article-manage";
+        page = pagination.pageNumber;
+        $.ajax({
+            url: "/ajax_page_change",
+            type: "post",
+            dataType: "json",
+            data: {
+                username: username,
+                type: type,
+                page: page
+            },
+            success: function (data) {
+                if (data.innerHTML != "") {
+                    var aim = $("#" + type + " tbody");
+                    aim.fadeOut("fast");
+                    aim.fadeIn("fast");
+                    aim.html(data.innerHTML);
+                    if (isMe == "False")
+                    {
+                        $(".btn .btn-mini").attr("disabled","disabled");
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+<!--星座-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Birthday = $("#userBirthday");
+        var Constellation = $("#userConstellation");
+        Birthday.datepicker().on("changeDate", function () {
+            var YMD = Birthday.val().split("-");
+            var month = YMD[1];
+            var date = YMD[2];
+            var md = parseInt(month + date);
+            var res = ""
+            if (md >= 321 && md <= 420) {
+                res = "白羊座";
+            }
+            else if (md >= 421 && md <= 521) {
+                res = "金牛座";
+            }
+            else if (md >= 522 && md <= 621) {
+                res = "双子座";
+            }
+            else if (md >= 622 && md <= 722) {
+                res = "巨蟹座";
+            }
+            else if (md >= 723 && md <= 822) {
+                res = "狮子座";
+            }
+            else if (md >= 823 && md <= 922) {
+                res = "处女座";
+            }
+            else if (md >= 923 && md <= 1023) {
+                res = "天秤座";
+            }
+            else if (md >= 1024 && md <= 1122) {
+                res = "天蝎座";
+            }
+            else if (md >= 1123 && md <= 1221) {
+                res = "射手座";
+            }
+            else if (md >= 1222 || md <= 120) {
+                res = "摩羯座";
+            }
+            else if (md >= 121 && md <= 219) {
+                res = "水瓶座";
+            }
+            else if (md >= 220 && md <= 320) {
+                res = "双鱼座";
+            }
+            Constellation.val(res);
+        });
+
+    });
+</script>
+
+<!--表单验证-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.psdform').bootstrapValidator({
+            feedbackIcons:{
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                oldPsd: {
+                    message: 'The username is not valid',
+                    validators: {
+                        notEmpty: {
+                            message: '原密码不能为空～～'
+                        },
+                        stringLength: {
+                            min: 6,
+                            max: 20,
+                            message: '密码长度不小于6,不大于20'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_]+$/,
+                            message: '密码只能是由数字，字母，下划线组成'
+                        }
+                    }
+                },
+                newPsd: {
+                    message: 'The username is not valid',
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空～～'
+                        },
+                        stringLength: {
+                            min: 6,
+                            max: 20,
+                            message: '密码长度不小于6,不大于20'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_]+$/,
+                            message: '密码只能是由数字，字母，下划线组成'
+                        }
+                    }
+                },
+                rnewPsd: {
+                    message: 'The username is not valid',
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空～～'
+                        },
+                        stringLength: {
+                            min: 6,
+                            max: 20,
+                            message: '密码长度不小于6,不大于20'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_]+$/,
+                            message: '密码只能是由数字，字母，下划线组成'
+                        },
+                        identical: {
+                        field: 'newPsd',
+                        message: '两次输入的密码不一致'
+                        }
+                    }
+                }
+            }
+        });
+
+        $('.userform').bootstrapValidator({
+            message: 'This value is not valid',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                userNickname: {
+                    message: 'The username is not valid',
+                    validators: {
+                        notEmpty: {
+                            message: '昵称不能为空～～'
+                        },
+                        stringLength: {
+                            min: 3,
+                            max: 20,
+                            message: '昵称长度不小于3,不大于20'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_]+$/,
+                            message: '昵称只能是由数字，字母，下划线组成'
+                        }
+                    }
+                },
+                userBirthday: {
+                    validators: {
+                        notEmpty: {
+                            message: '生日必填哦！'
+                        },
+                        date: {
+                            format: 'YYYY-MM-DD',
+                            message: '无效的日期格式'
+                        }
+                    }
+                },
+                userGender: {
+                    validators: {
+                        notEmpty: {
+                            message: '请填写性别～也可以选保密哦'
+                        }
+                    }
+                },
+                userEmail: {
+                    validators: {
+                        notEmpty: {
+                            message: '请填写邮箱～'
+                        },
+                        emailAddress: {
+                            message: '不是正确的邮箱地址！'
+                        }
+                    }
+                },
+                userPhone: {
+                    validators: {
+                        stringLength: {
+                            max: 11,
+                            min: 11,
+                            message: "号码填写有误"
+                        },
+                        regexp: {
+                            regexp: /^[0-9]+$/,
+                            message: '号码填写有误'
+                        }
+                    }
+                }
+            }
+        });
+        $("#userSubmit").click(function () {
+            $('#userform').bootstrapValidator('validate');
+        });
+        $("#user-edit-start").click(function () {
+            var nickname = $("#user_nickname").html();
+            var email = $("#user_email").html();
+            var constellation = $("#user_constellation").html();
+            var phone = $("#user_phone").html();
+            var birthday = $("#user_birthday").html();
+
+            $("#userNickname").prop("value", (nickname == "未填写" ? "" : nickname));
+            $("#userEmail").prop("value", (email == "未填写" ? "" : email));
+            $("#userConstellation").prop("value", (constellation == "未填写" ? "" : constellation));
+            $("#userPhone").prop("value", (phone == "未填写" ? "" : phone));
+            $("#userBirthday").prop("value", (birthday == "未填写" ? "" : birthday));
+
+            var gender = $("#user_gender").children().html();
+            if (gender == "男生") {
+                $("#genderMale").prop("checked", "true");
+            }
+            else if (gender = "女生") {
+                $("#genderFemale").prop("checked", "true");
+            }
+            else {
+                $("#genderUnknown").prop("checked", "true");
+            }
+        });
+    });
+    function toClose(url) {
+        $("#delete_url").val(url);
+        $("#reconfirm").modal();
+    }
+    function toDelete() {
+        window.location.href = $("#delete_url").val();
+    }
+</script>
+
+<!--头像裁剪-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        var preview = $("#user-img-preview");
+        var before_cut = $("#user-img-before-cut");
+        var preview_pane = $('#preview-pane');
+        var pcnt = $('.preview-container');
+        var px = pcnt.width();
+        var py = pcnt.height();
+        var jcrop_api, boundx, boundy;
+        var bounds = [px, py];
+        var n = 0;
+        console.log('init', [px, py]);
+        var getUrl = getObjectURL = function (file) {
+            var url = null;
+            if (window.createObjectURL != undefined) {
+                url = window.createObjectURL(file)
+            } else if (window.URL != undefined) {
+                url = window.URL.createObjectURL(file)
+            } else if (window.webkitURL != undefined) {
+                url = window.webkitURL.createObjectURL(file)
+            }
+            return url
+        };
+        $("#select-img-file").change(function () {
+            var url = getUrl(this.files[0]);
+            before_cut.attr("src", url);
+            if (n > 0) {
+                jcrop_api.setImage(url);
+                jcrop_api.setOptions({
+                    boxWidth: "250px",
+                    boxHeight: "250px"
+                })
+            }
+            preview.attr("src", url);
+            n++;
+            before_cut.Jcrop({
+                onChange: updatePreview,
+                onSelect: updatePreview,
+                aspectRatio: 1,
+                boxWidth: 250,
+                boxHeight: 250
+            }, function () {
+                var bounds = this.getBounds();
+                boundx = bounds[0];
+                boundy = bounds[1];
+                // Store the API in the jcrop_api variable
+                jcrop_api = this;
+
+                // Move the preview into the jcrop container for css positioning
+                preview_pane.appendTo(jcrop_api.ui.holder);
+            });
+
+            function updatePreview(c) {
+                if (parseInt(c.w) > 0) {
+                     $('#x1').val(c.x);
+  $('#y1').val(c.y);
+  $('#x2').val(c.x2);
+  $('#y2').val(c.y2);
+
+                    var rx = px / c.w;
+                    var ry = py / c.h;
+
+                    preview.css({
+                        width: Math.round(rx * boundx) + 'px',
+                        height: Math.round(ry * boundy) + 'px',
+                        marginLeft: '-' + Math.round(rx * c.x) + 'px',
+                        marginTop: '-' + Math.round(ry * c.y) + 'px'
+                    });
+                }
+            }
+        });
+    });
+
+</script>
+{% endblock %}

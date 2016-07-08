@@ -1,0 +1,138 @@
+{% extends "base_root.html" %}
+{% block content %}
+
+<div id="section-article-manage">
+    <table class="table table-striped table-bordered table-advance table-hover">
+
+        <thead>
+
+        <tr>
+            <th><i class="glyphicon glyphicon-user"></i>用户名</th>
+            <th><i class="glyphicon glyphicon-time"></i>注册时间</th>
+
+            <th><i class="glyphicon glyphicon-eye-open"></i>文章数</th>
+
+            <th><i class="glyphicon glyphicon-eye-open"></i>文章总浏览量</th>
+            <th><i class="glyphicon glyphicon-console"></i>权限</th>
+            <th><i class="glyphicon glyphicon-hand-up"></i>操作</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+
+        </tbody>
+
+    </table>
+    <div class="page-change">
+        <div class="pagination">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reconfirm" tabindex="-1" role="dialog"
+     aria-labelledby="reconfirm-title">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" type="button" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title reconfirm-info" id="reconfirm-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p style="color: #ac0001; font-size: large; font-weight: bold" id="reconfirm-info">
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-primary">
+                    取消
+                </button>
+                <a type="button" class="btn btn-warning" id="reconfirm_url">
+                    确认
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+    $(".pagination").pagination({
+        dataSource: function (done) {
+            $.ajax({
+                type: 'GET',
+                url: '/root/user',
+                data: {"operation": "getPages"},
+                success: function (response) {
+                    var result = [];
+                    for (var i = 1; i <= parseInt(response); i++) {
+                        result.push(i);
+                    }
+                    done(result);
+                }
+            });
+        },
+        pageSize: 8,
+        pageRange: 3,
+        callback: pageselectCallback,
+        className: 'paginationjs-theme-blue'
+    });
+
+    function pageselectCallback(page, pagination) {
+        var type = "section-article-manage";
+        page = pagination.pageNumber;
+        $.ajax({
+            url: "/root/user",
+            type: "post",
+            dataType: "json",
+            data: {
+                pages: page
+            },
+            success: function (data) {
+                if (data.innerHTML != "") {
+                    var aim = $("#" + type + " tbody");
+                    aim.fadeOut("fast");
+                    aim.fadeIn("fast");
+                    aim.html(data.innerHTML);
+                    $("a[href^='/article']").attr("target","_blank");
+                    $("a[href^='/user']").attr("target","_blank");
+                }
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    var $reconfirm_url = $("#reconfirm_url");
+
+    function toConfirm(e) {
+        var url = $(e).val();
+        var info = $("#reconfirm-info");
+        var title = $("#reconfirm-title");
+        if (url.indexOf("detail=up")>0){
+            info.text("确认要提高权限吗？");
+            title.text("提高权限");
+        }
+        else if (url.indexOf("detail=down")>0){
+            info.text("确认要降低权限吗？");
+            title.text("降低权限");
+        }
+        else{
+            info.text("确认要删除该用户吗？（此操作无法恢复，请谨慎选择）");
+            title.text("删除用户");
+        }
+        $('#reconfirm').modal("show");
+        $reconfirm_url.attr("href", url);
+        return false;
+    }
+</script>
+
+
+{%  endblock %}

@@ -1,0 +1,92 @@
+{% extends "base_root.html" %}
+{% block content %}
+{% if success %}
+<script type="text/javascript">
+    alert("{{success}}")
+</script>
+{% endif %}
+
+<div class="container">
+    <h3>网站巨幕内容设置
+        <small>首页巨幕</small>
+    </h3>
+    <form action="/root/website" method="post">
+        <div class="form-group">
+            <label for="home-jumbotron">内容：</label>
+            <textarea class="form-control" rows="6" id="home-jumbotron" name="content"></textarea>
+            <input type="hidden" name="operation" value="home-jumbotron">
+            <input class="form-control btn btn-primary" type="submit" value="提交">
+        </div>
+    </form>
+    <h3>首页提示栏设置
+        <small>首页提示栏</small>
+    </h3>
+    <form action="/root/website" method="post">
+        <div class="form-group">
+            <label for="home-alert">内容：</label>
+            <textarea class="form-control" rows="6" id="home-alert" name="content"></textarea>
+            <input type="hidden" name="operation" value="home-alert">
+            <input class="form-control btn btn-primary" type="submit" value="提交">
+        </div>
+    </form>
+    <h3>首页公告板设置
+        <small>首页公告板</small>
+    </h3>
+    <form action="/root/website" method="post">
+        <div class="form-group">
+            <label for="home-notify">内容：</label>
+            <textarea class="form-control" rows="6" id="home-notify" name="content"></textarea>
+            <input type="hidden" name="operation" value="home-notify">
+            <input class="form-control btn btn-primary" type="submit" value="提交">
+        </div>
+    </form>
+
+    <h3>学习笔记公告板设置
+        <small>学习笔记公告板</small>
+    </h3>
+    <form action="/root/website" method="post">
+        <div class="form-group">
+            <label for="note-notify">内容：</label>
+            <textarea class="form-control" rows="6" id="note-notify" name="content"></textarea>
+            <input type="hidden" name="operation" value="note-notify">
+            <input class="form-control btn btn-primary" type="submit" value="提交">
+        </div>
+    </form>
+
+    <h3>阅读公告板设置
+        <small>阅读公告板</small>
+    </h3>
+    <form action="/root/website" method="post">
+        <div class="form-group">
+            <label for="reading-notify">内容：</label>
+            <textarea class="form-control" rows="6" id="reading-notify" name="content"></textarea>
+            <input type="hidden" name="operation" value="reading-notify">
+            <input class="form-control btn btn-primary" type="submit" value="提交">
+        </div>
+    </form>
+
+    <h3>心情公告板设置
+        <small>心情公告板</small>
+    </h3>
+    <form action="/root/website" method="post">
+        <div class="form-group">
+            <label for="mood-notify">内容：</label>
+            <textarea class="form-control" rows="6" id="mood-notify" name="content"></textarea>
+            <input type="hidden" name="operation" value="mood-notify">
+            <input class="form-control btn btn-primary" type="submit" value="提交">
+        </div>
+    </form>
+    <h3>梦记公告板设置
+        <small>梦记公告板</small>
+    </h3>
+    <form action="/root/website" method="post">
+        <div class="form-group">
+            <label for="dream-notify">内容：</label>
+            <textarea class="form-control" rows="6" id="dream-notify" name="content"></textarea>
+            <input type="hidden" name="operation" value="dream-notify">
+            <input class="form-control btn btn-primary" type="submit" value="提交">
+        </div>
+    </form>
+</div>
+
+{%  endblock %}

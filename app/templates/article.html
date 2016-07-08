@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="_content">
+    <div class="row">
+        <div class="col-lg-1">
+        </div>
+        <div class="col-lg-8">
+            <article class="article">
+                <div class="article-head">
+                    <h1 class="post-title">
+                        {{ article.title | safe}}
+                    </h1>
+
+                    <div class="post-meta">
+                    <span class="glyphicon glyphicon-user post-meta" aria-hidden="true">
+                        作者：<a href="{{url_for('user', username=article.username)}}">
+                        {{article.username}}
+                    </a>
+                    </span>
+
+                    <span class="glyphicon glyphicon-eye-open post-meta" aria-hidden="true">
+                        浏览次数：{{article.views}}
+                    </span>
+
+                    <span class="glyphicon glyphicon-time article-time post-meta">
+                    发布时间：<time datetime="{{ article.timestamp }}">{{ article.timestamp }}</time>
+                    </span>
+                    </div>
+                </div>
+
+                <hr class="hr-line">
+                <div class="article-body">
+                    {{ article.body|safe }}
+                </div>
+
+                <hr class="hr-line">
+                <div class="post-foot" id="{{ article.id }}">
+                    <a class="btn btn-success" id="pros">
+                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                        赞<span class="pc-num"></span>
+                    </a>
+                    <a class="btn btn-warning" id="cons">
+                        <span class="glyphicon glyphicon-thumbs-down"></span>
+                        踩<span class="pc-num"></span>
+                    </a>
+                    <p id="pc-alert" class="alert-warning"></p>
+                </div>
+
+                <div class="article-comments">
+                    <!-- 多说评论框 start -->
+                    <div class="ds-thread" data-thread-key="{{ article.id }}" data-title="{{ article.title }}"
+                         data-url="{{ url_for('article', num=article.id) }}"></div>
+                    <!-- 多说评论框 end -->
+                    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+                    <script type="text/javascript">
+                        var duoshuoQuery = {short_name: "oattao"};
+                        (function () {
+                            var ds = document.createElement('script');
+                            ds.type = 'text/javascript';
+                            ds.async = true;
+                            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+                            ds.charset = 'UTF-8';
+                            (document.getElementsByTagName('head')[0]
+                            || document.getElementsByTagName('body')[0]).appendChild(ds);
+
+
+                        })();
+
+                    </script>
+                    <!-- 多说公共JS代码 end -->
+                </div>
+            </article>
+
+        </div>
+    </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        pc_count("init");
+        var button = $(".post-foot a");
+        button.click(function () {
+            pc_count($(this).attr("id"));
+            button.addClass("disabled");
+        });
+    });
+
+    function pc_count(value) {
+        var article_id = $(".post-foot").attr("id");
+        $.post("/pc_count", {id: article_id, type: value}, function (data) {
+            if (value == "init") {
+                $(".post-foot #pros .pc-num").text(data.value[0] > 99 ? "99+" : data.value[0]);
+                $(".post-foot #cons .pc-num").text(data.value[1] > 99 ? "99+" : data.value[1]);
+                return;
+            }
+            if (data.success == 1) {
+                $(".post-foot #" + value + " .pc-num").text(data.value[0] > 99 ? "99+" : data.value[0]);
+            }
+            else {
+                $("#pc-alert").text(data.value[0] > 99 ? "99+" : data.value[0])
+            }
+
+        }, "json")
+    }
+</script>
+
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shCore.min.js"></script>
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushPython.min.js"></script>
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushCpp.js"></script>
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushCSharp.min.js"></script>
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushCss.min.js"></script>
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushJava.min.js"></script>
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushJScript.js"></script>
+<script src="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushXml.min.js"></script>
+<link href="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/styles/shCore.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/SyntaxHighlighter/3.0.83/styles/shThemeDefault.css" rel="stylesheet">
+<script type="text/javascript">
+    $(document).ready(function(){
+//    SyntaxHighlighter.autoloader(
+//            ['js','jscript','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/javascript','scripts/shBrushJScript.js'],
+//            ['bash','shell','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushBash.js'],
+//            ['css','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushCss.js'],
+//            ['xml','html','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushXml.js'],
+//            ['sql','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushSql.js'],
+//            ['php','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushPhp.js'],
+//            ['csharp','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushCSharp.min.js'],
+//            ['python','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushPython.min.js'],
+//            ['cpp','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushCpp.min.js'],
+//            ['java','//cdn.bootcss.com/SyntaxHighlighter/3.0.83/scripts/shBrushJava.min.js']
+//        );
+    SyntaxHighlighter.all();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="_content">
+        <div class="breadcrumb">
+            <li><a href="/">首页</a></li>
+            <li class="active">心情</li>
+        </div>
+        <div class="row">
+            <main class="col-md-8 col-md-offset-1 main-content">
+                <div class="container-fluid">
+                    {% for a in articles %}
+                    <article class="post">
+                        <div class="post-head">
+                            <h3 class="post-title"><a href="{{ url_for('article', num=a.id )}}">{{ a.title }}</a></h3>
+                            <div class="post-meta">
+                                <span class="post-static">
+                                    作者:
+                                </span>
+                                <a href="{{ url_for('user', username=a.username )}}">{{ a.username }}</a>
+
+
+                                <p class="post-type">
+                                    <span class="post-static">
+                                    分类:
+                                    </span>
+                                    {{ a.type }}
+                                </p>
+
+                                <span class="post-view">
+                                    浏览次数:{{ a.views }}
+                                </span>
+
+                                <span class="post-time">
+                                    发布时间：
+                                    <time datetime="{{ a.timestamp }}">{{ a.timestamp }}</time>
+
+                                </span>
+                            </div>
+                        </div>
+                        <div class="post-foot">
+                            <hr>
+                        </div>
+                        {% endfor %}
+                        {% if articles == "" %}
+                        <p>暂时还没有文章哦～～～</p>
+                        {% endif %}
+                    </article>
+                </div>
+                <div class="page-change">
+                    <ul class="pagination pagination-lg">
+                        <li class="{% if pages[1] == 1 %} disabled {% endif %}"><a
+                                href="{% if pages[1] != 1 %} ?page={{ pages[1] - 1}} {% else %} javascript:volid(0); {% endif %} ">上一页</a>
+                        </li>
+                        <li><a href="?page=1">首页</a></li>
+
+                        {% if pages[1] > 2 %}
+                        <li><a href="?page={{ pages[1] - 2 }}">{{ pages[1] - 2}}</a></li>
+                        {% endif %}
+
+                        {% if pages[1] > 1 %}
+                        <li><a href="?page={{ pages[1] - 1 }}">{{ pages[1] - 1}}</a></li>
+                        {% endif %}
+
+                        <li class="active"><a href="?page={{ pages[1] }}">{{ pages[1] }}</a></li>
+
+                        {% if pages[1] < pages[0] %}
+                        <li><a href="?page={{ pages[1] + 1  }}">{{ pages[1] + 1}}</a></li>
+                        {% endif %}
+
+                        {% if pages[1] +1 < pages[0] %}
+                        <li><a href="?page={{ pages[1] + 2 }}">{{ pages[1] + 2}}</a></li>
+                        {% endif %}
+
+                        <li class="{% if pages[0] == 0 %} disabled {% endif %}"><a
+                                href="{% if pages[0] != 0 %} ?page={{pages[0]}} {% else %} javascript:void(0); {% endif %}">末页</a>
+                        </li>
+                        <li class="{% if pages[1] >= pages[0] %} disabled {% endif %}"><a
+                                href="{% if pages[1] < pages[0] %} ?page={{ pages[1] + 1}}  {% else %} javascript:void(0); {% endif %}">下一页</a>
+                        </li>
+                    </ul>
+                </div>
+            </main>
+            <div class="col-md-3 col-md-offset-0">
+                <div class="right-notify">
+                    <div class="list-group">
+                        {% if notify %}
+                        {{ notify.content|safe }}
+                        {% else %}
+                        <div class="list-group">
+                            <li>欢迎^o^</li>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

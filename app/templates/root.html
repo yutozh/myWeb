@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="_content">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="list-group">
+                    <li type="button" class="list-group-item list-group-item-success">管理项目列表</li>
+                    <a type="button" class="list-group-item" href="/root/article" target="ifr">
+                        <span class="badge">{{ num_a }}</span>文章管理</a>
+                    <a type="button" class="list-group-item" href="/root/user" target="ifr">用户管理</a>
+                    <a type="button" class="list-group-item" href="/root/website" target="ifr">网站管理</a>
+                    <a type="button" class="list-group-item" href="/root/post" target="ifr">
+                        <span class="badge">{{ num_p }}</span>留言管理</a>
+                </div>
+            </div>
+            <main class="col-md-9  main-content">
+                <div style="min-height: 300px">
+                    <iframe width="100%" name="ifr" frameborder="0" id="ifr" scrolling="no" onLoad="iFrameHeight()">
+
+                    </iframe>
+                </div>
+
+            </main>
+        </div>
+    </div>
+</div>
+<script>
+    var $as = $(".list-group a");
+    $as.click(function () {
+        $as.removeClass("active");
+        $(this).addClass("active");
+    });
+    $(document).ready(function () {
+        document.getElementById('ifr').contentWindow.document.write("<h2>欢迎使用后台管理系统</h2>");
+    });
+    function iFrameHeight() {
+        var ifr = document.getElementById("ifr");
+        var subWeb = document.frames ? document.frames["ifr"].document : ifr.contentDocument;
+        if (ifr != null && subWeb != null) {
+            ifr.height = subWeb.body.scrollHeight;
+        }
+    }
+</script>
+
+{% endblock %}
