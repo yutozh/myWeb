@@ -10,7 +10,7 @@ from flask import request, g, redirect, render_template
 from flask.ext.login import login_required,logout_user
 from app.model.dbs import *
 from app.model.forms import *
-import Image
+from PIL import Image
 
 @app.route("/updateUserInfo", methods=["POST"])
 @login_required
@@ -53,7 +53,7 @@ def updateUserImg():
         img.save(savepath)
 
         im = Image.open(savepath)
-        im.resize((250, 250), Image.ANTIALIAS)
+        im.thumbnail((250,250))
         box = (x1, y1, x2, y2)
         aim = im.crop(box)
         aim.save(savepath)
