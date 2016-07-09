@@ -44,19 +44,21 @@ def home(page=1):
     if g.user is not None and g.user.is_authenticated:
         form = None
     return render_template("home.html", pages=(all_pages, page),alert=alert, jumbotron=jumbotron,
-                          notify=notify, form=form, user=g.user, articles=articles)
+                          notify=notify, form=form, user=g.user, articles=articles, webtype="home")
 
-@app.route("/regi", methods=["POST"])
+@app.route("/regi", methods=["POST","GET"])
 def regi():
+    if request.method == "GET":
+        return render_template("regi.html")
     form = RegiForm(request.form)
-    if form.validate_on_submit():
-        user = User(email=form.email.data,
-        username=form.username.data, password=form.psd.data)
-        db.session.add(user)
-        db.session.commit()
-        return render_template("home.html", form=form, user=None)
-    print form.errors
-    return render_template("home.html", form=form, error=form.errors.values()[0], user=None)
+    # if form.validate_on_submit():
+    #     user = User(email=form.email.data,
+    #     username=form.username.data, password=form.psd.data)
+    #     db.session.add(user)
+    #     db.session.commit()
+    #     return render_template("home.html", form=form, user=None)
+    # print form.errors
+    # return render_template("home.html", form=form, error=form.errors.values()[0], user=None)
 
 @app.route("/loginout")
 @login_required

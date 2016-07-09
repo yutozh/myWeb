@@ -40,7 +40,7 @@ def updateUserImg():
         y1 = int(request.form.get("y1",""))
         x2 = int(request.form.get("x2",""))
         y2 = int(request.form.get("y2",""))
-    except:
+    except Exception as e:
         x1 = x2 = 0
         y1 = y2 = 100
     if img and allow_file(img.filename):
@@ -51,9 +51,7 @@ def updateUserImg():
         savepath = os.path.join(UPLOAD_FOLDER, "user_img/" + filename)
 
         img.save(savepath)
-
         im = Image.open(savepath)
-        im.thumbnail((250,250))
         box = (x1, y1, x2, y2)
         aim = im.crop(box)
         aim.save(savepath)

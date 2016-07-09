@@ -27,6 +27,11 @@ $(document).ready(function () {
         }
     bgn = cbg.substring(cbg.indexOf("bg")+2,cbg.indexOf("bg")+3);
     bg.attr("src", $.cookie("bg"));
+
+    var active = $("._content").attr("value");
+    if(active != undefined ){
+        $("#menu-" + active).addClass("nav-active");
+    }
     $("body").css("min-height", ($(document).height()));
     isLogin = $(".login-hide").attr("value");
     if (isLogin == 0){
@@ -271,10 +276,5 @@ $("#chat-submit").click(function (e) {
         e.preventDefault();
     }
 });
-
-document.querySelector('.center').onclick = function (e) {
-    e.preventDefault();
-    document.querySelector('.circle').classList.toggle('open');
-};
 
 

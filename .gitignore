@@ -7,6 +7,7 @@ __pycache__/
 
 config.py
 .idea
+my.wsgi
 
 # C extensions
 *.so

@@ -704,8 +704,7 @@
                 onChange: updatePreview,
                 onSelect: updatePreview,
                 aspectRatio: 1,
-                boxWidth: 250,
-                boxHeight: 250
+                boxWidth: 300
             }, function () {
                 var bounds = this.getBounds();
                 boundx = bounds[0];
@@ -719,11 +718,10 @@
 
             function updatePreview(c) {
                 if (parseInt(c.w) > 0) {
-                     $('#x1').val(c.x);
-  $('#y1').val(c.y);
-  $('#x2').val(c.x2);
-  $('#y2').val(c.y2);
-
+                     $('#x1').val(Math.ceil(c.x));
+                      $('#y1').val(Math.ceil(c.y));
+                      $('#x2').val(Math.ceil(c.x2));
+                      $('#y2').val(Math.ceil(c.y2));
                     var rx = px / c.w;
                     var ry = py / c.h;
 
