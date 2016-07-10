@@ -24,8 +24,9 @@ def add_posts():
 
 @manager.option('-u','--username',dest='username', default="Default")
 @manager.option('-p','--password',dest='password', default="Default")
-def add_user(username, password):
-    u = User(username=username, password=password)
+@manager.option('-r','--role',dest='role', default="0")
+def add_user(username, password, role):
+    u = User(username=username, password=password, role=role)
     try:
         db.session.add(u)
         db.session.commit()
