@@ -8,9 +8,11 @@ sys.setdefaultencoding("utf-8")
 
 from flask import request, g, redirect, render_template
 from flask.ext.login import login_required,logout_user
+from flask_mail import Mail, Message
 from app.model.dbs import *
 from app.model.forms import *
 from PIL import Image
+from app.settings import content_body
 
 @app.route("/updateUserInfo", methods=["POST"])
 @login_required
@@ -27,6 +29,8 @@ def updateUserInfo():
         if gender != "":
             g.user.gender = gender
         db.session.commit()
+        send_mail("邮箱设置成功！",g.user.email,
+            html=mail_body(content_body.format(username=g.user.username)))
     else:
         print form.errors
     return redirect("user/%s" % g.user.username)
@@ -50,15 +54,25 @@ def updateUserImg():
         filename = m.hexdigest()[:20] + "." + rnd
         savepath = os.path.join(UPLOAD_FOLDER, "user_img/" + filename)
 
-        img.save(savepath)
-        im = Image.open(savepath)
-        box = (x1, y1, x2, y2)
-        aim = im.crop(box)
-        aim.save(savepath)
+        error = ""
+        dirname = os.path.dirname(savepath)
+        if not os.path.exists(dirname):
+            try:
+                os.makedirs(dirname)
+            except:
+                error = 'ERROR_CREATE_DIR'
+        elif not os.access(dirname, os.W_OK):
+            error = 'ERROR_DIR_NOT_WRITEABLE'
+        if not error:
+            img.save(savepath)
+            im = Image.open(savepath)
+            box = (x1, y1, x2, y2)
+            aim = im.crop(box)
+            aim.save(savepath)
 
-        g.user.img = filename
-        db.session.commit()
-        return redirect("user/%s" % g.user.username)
+            g.user.img = filename
+            db.session.commit()
+            return redirect("user/%s" % g.user.username)
     return redirect("user/%s" % g.user.username)
 
 @app.route("/updateUserPsd", methods=["POST"])
@@ -85,3 +99,18 @@ def updateUserPsd():
 def allow_file(filename):
     return "." in filename and filename.rsplit(".",1)[1] in ALLOWED_EXTENSIONS
 
+def mail_body(body, foot="oattao.cn",subject="邮箱设置成功提醒",):
+    body = render_template("mail_template.html",
+                           subject=subject,
+                           body=body,
+                           foot=foot)
+    return body
+
+def send_mail(subject, email, body="", html=""):
+    mail = Mail(app)
+
+    msg = Message(subject=subject,
+                  sender=app.config["MAIL_USERNAME"],
+                  recipients=[email],
+                  html=html)
+    mail.send(msg)

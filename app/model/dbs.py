@@ -18,7 +18,7 @@ class User(db.Model):
     timestamp = db.Column(db.Date)
     nickname = db.Column(db.String(64))
     img = db.Column(db.String(32), unique=True)
-    email = db.Column(db.String(128), unique=True)
+    email = db.Column(db.String(128))
     gender = db.Column(db.Integer, default=-1) # -1 unknown 0 male 1 female
     birthday = db.Column(db.Date)
     constellation = db.Column(db.String(10))
