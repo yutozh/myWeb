@@ -2,7 +2,11 @@ body {
     text-outline: none;
     outline: 0;
     height: 110%;
-    background-color: #EFEBE2;}
+    background-color: #EFEBE2;
+    -ms-overflow-style: scrollbar;
+    font-family: "Lucida Grande", Lucida Sans Unicode, Hiragino Sans GB, WenQuanYi Micro Hei, Verdana, Aril, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
 #bg-container{
     position: relative;
     height: 100%;
@@ -269,8 +273,8 @@ a:active {
 
 .user-edit {
     float: right;
-    margin-top: -5px;
-    width: 80px;
+    margin-right: 50px;
+    width: 100px;
     color: darkgray;
     cursor: pointer;
     background: rgba(226, 228, 221, 0.1);
@@ -1060,6 +1064,7 @@ a:active {
 
 .article-body {
     padding-bottom: 80px;
+    word-break: break-all;
 }
 
 .post-foot {
@@ -1082,6 +1087,9 @@ a:active {
 
 .hr-line {
     color: #8a8a8a;
+    clear: both;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 

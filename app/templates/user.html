@@ -51,15 +51,15 @@
                             邮箱：<span id="user_email">{% if user.email %}{{user.email}}{% else %}未填写{% endif %}</span>
                             手机：<span id="user_phone">{% if user.phone %}{{user.phone}}{% else %}未填写{% endif %}</span>
                         </p>
-                        {% if isMe == True %}
+                    </div>
+                    {% if isMe == True %}
                         <div class="user-edit">
                             <span class="fa fa-edit"><a id="user-edit-start" data-toggle="modal"
                                                         data-target="#changeInfo">修改资料...</a></span>
                             <span class="fa fa-edit"><a id="user-psd-start" data-toggle="modal"
                                                         data-target="#changePsd">修改密码...</a></span>
                         </div>
-                        {% endif %}
-                    </div>
+                    {% endif %}
                     <div class="user-money">
                         <p>我的金币：<span id="money">{{user.money}}</span>
                             {% if isMe == True %}
